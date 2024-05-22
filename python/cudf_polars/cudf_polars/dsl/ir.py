@@ -31,7 +31,7 @@ import cudf._lib.pylibcudf as plc
 
 import cudf_polars.dsl.expr as expr
 from cudf_polars.containers import Column, DataFrame
-from cudf_polars.utils import sorting
+from cudf_polars.utils import dtypes, sorting
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -146,9 +146,11 @@ class Scan(IR):
             assert_never(self.typ)
         if row_index is not None:
             name, offset = row_index
-            # TODO: dtype
-            step = plc.interop.from_arrow(pa.scalar(1))
-            init = plc.interop.from_arrow(pa.scalar(offset))
+            dtype = self.schema[name]
+            step = plc.interop.from_arrow(pa.scalar(1, type=dtypes.to_arrow(dtype)))
+            init = plc.interop.from_arrow(
+                pa.scalar(offset, type=dtypes.to_arrow(dtype))
+            )
             index = Column(
                 plc.filling.sequence(df.num_rows, init, step), name
             ).set_sorted(

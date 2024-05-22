@@ -9,6 +9,8 @@ from contextlib import AbstractContextManager, nullcontext
 from functools import singledispatch
 from typing import Any
 
+import pyarrow as pa
+
 from polars.polars import _expr_nodes as pl_expr, _ir_nodes as pl_ir
 
 import cudf._lib.pylibcudf as plc  # noqa: TCH002, singledispatch register needs this name defined.
@@ -295,7 +297,8 @@ def _(node: pl_expr.Window, visitor: Any, dtype: plc.DataType) -> expr.Expr:
 
 @_translate_expr.register
 def _(node: pl_expr.Literal, visitor: Any, dtype: plc.DataType) -> expr.Expr:
-    return expr.Literal(dtype, node.value)
+    value = pa.scalar(node.value, type=dtypes.to_arrow(dtype))
+    return expr.Literal(dtype, value)
 
 
 @_translate_expr.register
@@ -337,7 +340,7 @@ def _(node: pl_expr.Cast, visitor: Any, dtype: plc.DataType) -> expr.Expr:
     inner = translate_expr(visitor, n=node.expr)
     # Push casts into literals so we can handle Cast(Literal(Null))
     if isinstance(inner, expr.Literal):
-        return expr.Literal(dtype, inner.value)
+        return expr.Literal(dtype, inner.value.cast(dtypes.to_arrow(dtype)))
     else:
         return expr.Cast(dtype, inner)
 
