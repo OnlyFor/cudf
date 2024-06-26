@@ -6,7 +6,10 @@ import pytest
 
 import polars as pl
 
-from cudf_polars.testing.asserts import assert_gpu_result_equal
+from cudf_polars.testing.asserts import (
+    assert_gpu_result_equal,
+    assert_ir_translation_raises,
+)
 
 
 @pytest.fixture(params=[False, True], ids=["no_nulls", "nulls"])
@@ -72,21 +75,39 @@ def test_boolean_function_unary(request, expr, has_nans, has_nulls):
     assert_gpu_result_equal(q)
 
 
-@pytest.mark.xfail(reason="Evaluation handlers not yet implemented")
 @pytest.mark.parametrize(
     "expr",
     [
         pl.col("a").is_finite(),
         pl.col("a").is_infinite(),
-        pl.col("a").is_in(pl.col("b")),
+        [pl.col("a").is_infinite(), pl.col("b").is_finite()],
+        pl.col("a").is_in(pl.col("c")),
     ],
 )
-def test_unsupported_boolean_function(expr):
-    df = pl.LazyFrame({"a": [1, float("nan"), 2, 4], "b": [1, 2, 3, 4]})
+def test_boolean_function_finite_isin(expr):
+    df = pl.LazyFrame(
+        {
+            "a": pl.Series([1, float("nan"), 2, float("inf")], dtype=pl.Float64()),
+            "b": [1, 2, 3, 4],
+            "c": pl.Series([1, 2, 3, 4], dtype=pl.Float64()),
+        }
+    )
 
     q = df.select(expr)
 
     assert_gpu_result_equal(q)
+
+
+def test_boolean_function_isin_cast_raises():
+    df = pl.LazyFrame(
+        {
+            "a": pl.Series([1, float("nan"), 2, 4], dtype=pl.Float64()),
+            "b": [1, 2, 3, 4],
+        }
+    )
+    q = df.select(pl.col("a").is_in(pl.col("b")))
+
+    assert_ir_translation_raises(q, NotImplementedError)
 
 
 @pytest.mark.parametrize("closed", ["both", "left", "right", "none"])
