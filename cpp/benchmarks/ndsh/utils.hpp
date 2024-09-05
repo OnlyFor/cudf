@@ -29,6 +29,11 @@ auto make_managed_pool();
 auto make_prefetch();
 auto make_prefetch_pool();
 
+/**
+ * @brief Create an RMM memory resource
+ *
+ * @param rmm_mode The type of memory resource to create
+ */
 std::shared_ptr<rmm::mr::device_memory_resource> create_memory_resource(
   std::string const& rmm_mode);
 
@@ -65,7 +70,6 @@ class table_with_names {
    */
   [[nodiscard]] cudf::size_type col_id(std::string const& col_name) const
   {
-    CUDF_FUNC_RANGE();
     auto it = std::find(col_names.begin(), col_names.end(), col_name);
     if (it == col_names.end()) {
       std::string err_msg = "Column `" + col_name + "` not found";
@@ -81,7 +85,6 @@ class table_with_names {
    */
   table_with_names& append(std::unique_ptr<cudf::column>& col, std::string const& col_name)
   {
-    CUDF_FUNC_RANGE();
     auto cols = tbl->release();
     cols.push_back(std::move(col));
     tbl = std::make_unique<cudf::table>(std::move(cols));
@@ -95,7 +98,6 @@ class table_with_names {
    */
   [[nodiscard]] cudf::table_view select(std::vector<std::string> const& col_names) const
   {
-    CUDF_FUNC_RANGE();
     std::vector<cudf::size_type> col_indices;
     for (auto const& col_name : col_names) {
       col_indices.push_back(col_id(col_name));
