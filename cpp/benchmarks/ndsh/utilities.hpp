@@ -46,7 +46,7 @@ class table_with_names {
    *
    * @param col_name The name of the column
    */
-  [[nodiscard]] cudf::size_type col_id(std::string const& col_name) const;
+  [[nodiscard]] cudf::size_type column_id(std::string const& col_name) const;
   /**
    * @brief Append a column to the table
    *
