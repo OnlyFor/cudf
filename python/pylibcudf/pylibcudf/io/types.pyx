@@ -157,11 +157,6 @@ cdef class SourceInfo:
             for src in sources:
                 if not isinstance(src, (os.PathLike, str)):
                     raise ValueError("All sources must be of the same type!")
-                if not os.path.isfile(src):
-                    raise FileNotFoundError(errno.ENOENT,
-                                            os.strerror(errno.ENOENT),
-                                            src)
-
                 c_files.push_back(<string> str(src).encode())
 
             self.c_obj = move(source_info(c_files))
