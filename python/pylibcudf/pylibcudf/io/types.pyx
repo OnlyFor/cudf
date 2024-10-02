@@ -17,7 +17,6 @@ from pylibcudf.libcudf.io.types cimport (
 )
 
 import codecs
-import errno
 import io
 import os
 
