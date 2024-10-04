@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import functools
 import json
 from contextlib import AbstractContextManager, nullcontext
 from functools import singledispatch
@@ -182,7 +183,41 @@ def _(
     with set_node(visitor, node.input_right):
         inp_right = translate_ir(visitor, n=None)
         right_on = [translate_named_expr(visitor, n=e) for e in node.right_on]
-    return ir.Join(schema, left_on, right_on, node.options, inp_left, inp_right)
+    if (how := node.options[0]) in {
+        "inner",
+        "left",
+        "right",
+        "full",
+        "cross",
+        "leftsemi",
+        "leftanti",
+    }:
+        return ir.Join(schema, left_on, right_on, node.options, inp_left, inp_right)
+    else:
+        how, op1, op2 = how
+        if how != "inequality":
+            raise NotImplementedError(f"Unsupported join type {how}")
+        # No exposure of mixed/conditional joins in pylibcudf yet, so in
+        # the first instance, implement by doing a cross join followed by
+        # a filter.
+        cross = ir.Join(
+            schema, [], [], ("cross", *node.options[1:]), inp_left, inp_right
+        )
+        dtype = plc.DataType(plc.TypeId.BOOL8)
+        if op2 is None:
+            ops = [op1]
+        else:
+            ops = [op1, op2]
+        mask = functools.reduce(
+            functools.partial(
+                expr.BinOp, dtype, plc.binaryop.BinaryOperator.LOGICAL_AND
+            ),
+            (
+                expr.BinOp(dtype, expr.BinOp._MAPPING[op], left.value, right.value)
+                for op, left, right in zip(ops, left_on, right_on, strict=True)
+            ),
+        )
+        return ir.Filter(schema, expr.NamedExpr("mask", mask), cross)
 
 
 @_translate_ir.register
