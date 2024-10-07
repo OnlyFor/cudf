@@ -20,7 +20,8 @@ import polars.polars as plrs
 from polars.polars import _expr_nodes as pl_expr, _ir_nodes as pl_ir
 
 from cudf_polars.dsl import expr, ir
-from cudf_polars.typing import NodeTraverser
+from cudf_polars.dsl.traversal import make_recursive, reuse_if_unchanged
+from cudf_polars.typing import ExprTransformer, NodeTraverser
 from cudf_polars.utils import dtypes, sorting
 
 __all__ = ["translate_ir", "translate_named_expr"]
@@ -170,6 +171,22 @@ def _(
     )
 
 
+@singledispatch
+def _rename(e: expr.Expr, self: ExprTransformer) -> expr.Expr:
+    raise NotImplementedError()
+
+
+_rename.register(expr.Expr)(reuse_if_unchanged)
+
+
+@_rename.register
+def _(e: expr.Col, self: ExprTransformer) -> expr.Expr:
+    new_name = self.state["namer"](e.name)
+    if new_name != e.name:
+        return type(e)(e.dtype, new_name)
+    return e
+
+
 @_translate_ir.register
 def _(
     node: pl_ir.Join, visitor: NodeTraverser, schema: dict[str, plc.DataType]
@@ -208,6 +225,20 @@ def _(
             ops = [op1]
         else:
             ops = [op1, op2]
+        suffix = cross.suffix
+
+        # Column references in the right table refer to the post-join
+        # names, so with suffixes.
+        def renamer(name):
+            return name if name not in inp_left.schema else f"{name}{suffix}"
+
+        mapper = make_recursive(_rename, state={"namer": renamer})
+        right_on = [
+            expr.NamedExpr(renamer(old.name), new)
+            for new, old in zip(
+                (mapper(e.value) for e in right_on), right_on, strict=True
+            )
+        ]
         mask = functools.reduce(
             functools.partial(
                 expr.BinOp, dtype, plc.binaryop.BinaryOperator.LOGICAL_AND
