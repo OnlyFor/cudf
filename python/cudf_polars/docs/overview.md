@@ -8,7 +8,7 @@ You will need:
    preferred configuration. Or else, use
    [rustup](https://www.rust-lang.org/tools/install)
 2. A [cudf development
-   environment](https://github.com/rapidsai/cudf/blob/branch-24.10/CONTRIBUTING.md#setting-up-your-build-environment).
+   environment](https://github.com/rapidsai/cudf/blob/branch-24.12/CONTRIBUTING.md#setting-up-your-build-environment).
    The combined devcontainer works, or whatever your favourite approach is.
 
 > ![NOTE] These instructions will get simpler as we merge code in.
@@ -201,21 +201,21 @@ the logical plan in any case, so is reasonably natural.
 # Containers
 
 Containers should be constructed as relatively lightweight objects
-around their pylibcudf counterparts. We have four (in
+around their pylibcudf counterparts. We have three (in
 `cudf_polars/containers/`):
 
 1. `Scalar` (a wrapper around a pylibcudf `Scalar`)
 2. `Column` (a wrapper around a pylibcudf `Column`)
-3. `NamedColumn` (a `Column` with an additional name)
-4. `DataFrame` (a wrapper around a pylibcudf `Table`)
+3. `DataFrame` (a wrapper around a pylibcudf `Table`)
 
 The interfaces offered by these are somewhat in flux, but broadly
-speaking, a `DataFrame` is just a list of `NamedColumn`s which each
-hold a `Column` plus a string `name`. `NamedColumn`s are only ever
-constructed via `NamedExpr`s, which are the top-level expression node
-that lives inside an `IR` node. This means that the expression
-evaluator never has to concern itself with column names: columns are
-only ever decorated with names when constructing a `DataFrame`.
+speaking, a `DataFrame` is just a mapping from string `name`s to
+`Column`s, and thus also holds a pylibcudf `Table`. Names are only
+attached to `Column`s and hence inserted into `DataFrames` via
+`NamedExpr`s, which are the top-level expression nodes that live
+inside an `IR` node. This means that the expression evaluator never
+has to concern itself with column names: columns are only ever
+decorated with names when constructing a `DataFrame`.
 
 The columns keep track of metadata (for example, whether or not they
 are sorted). We could imagine tracking more metadata, like minimum and
