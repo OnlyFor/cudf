@@ -5213,7 +5213,6 @@
 - Fixing empty null lists throwing explode_outer for a loop. ([#7649](https://github.com/rapidsai/cudf/pull/7649)) [@hyperbolic2346](https://github.com/hyperbolic2346)
 - Fix internal compiler error during JNI Docker build ([#7645](https://github.com/rapidsai/cudf/pull/7645)) [@jlowe](https://github.com/jlowe)
 - Fix Debug build break with device_uvectors in grouped_rolling.cu ([#7633](https://github.com/rapidsai/cudf/pull/7633)) [@mythrocks](https://github.com/mythrocks)
-- Parquet reader: Fix issue when using skip_rows on non-nested columns containing nulls ([#7627](https://github.com/rapidsai/cudf/pull/7627)) [@nvdbaranec](https://github.com/nvdbaranec)
 - Parquet reader:  Fix issue when using skip_rows on non-nested columns containing nulls ([#7627](https://github.com/rapidsai/cudf/pull/7627)) [@nvdbaranec](https://github.com/nvdbaranec)
 - Fix ORC reader for empty DataFrame/Table ([#7624](https://github.com/rapidsai/cudf/pull/7624)) [@rgsl888prabhu](https://github.com/rgsl888prabhu)
 - Fix specifying GPU architecture in JNI build ([#7612](https://github.com/rapidsai/cudf/pull/7612)) [@jlowe](https://github.com/jlowe)
