@@ -665,7 +665,7 @@ dependencies:
         matrices:
           - matrix: {cuda: "12.*"}
             packages:
-              - &pynvjitlink_unsuffixed pynvjitlink
+              - &pynvjitlink_unsuffixed pynvjitlink>=0.0.0a0
           - matrix: {cuda: "11.*"}
             packages:
               - &cubinlinker_unsuffixed cubinlinker
@@ -676,7 +676,7 @@ dependencies:
               cuda: "12.*"
               cuda_suffixed: "true"
             packages:
-              - pynvjitlink-cu12
+              - pynvjitlink-cu12>=0.0.0a0
           - matrix:
               cuda: "12.*"
               cuda_suffixed: "false"
