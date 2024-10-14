@@ -5312,7 +5312,6 @@
 - Add groupby scan operations (sort groupby) ([#7387](https://github.com/rapidsai/cudf/pull/7387)) [@karthikeyann](https://github.com/karthikeyann)
 - Add cudf::explode_position ([#7376](https://github.com/rapidsai/cudf/pull/7376)) [@hyperbolic2346](https://github.com/hyperbolic2346)
 - Add string conversion to/from decimal values libcudf APIs ([#7364](https://github.com/rapidsai/cudf/pull/7364)) [@davidwendt](https://github.com/davidwendt)
-- Add groupby SUM_OF_SQUARES support ([#7362](https://github.com/rapidsai/cudf/pull/7362)) [@karthikeyann](https://github.com/karthikeyann)
 - Add  groupby SUM_OF_SQUARES support ([#7362](https://github.com/rapidsai/cudf/pull/7362)) [@karthikeyann](https://github.com/karthikeyann)
 - Add `Series.drop` api ([#7304](https://github.com/rapidsai/cudf/pull/7304)) [@isVoid](https://github.com/isVoid)
 - get_json_object() implementation ([#7286](https://github.com/rapidsai/cudf/pull/7286)) [@nvdbaranec](https://github.com/nvdbaranec)
@@ -5321,7 +5320,6 @@
 - Add support for special tokens in nvtext::subword_tokenizer ([#7254](https://github.com/rapidsai/cudf/pull/7254)) [@davidwendt](https://github.com/davidwendt)
 - Fix inplace update of data and add Series.update ([#7201](https://github.com/rapidsai/cudf/pull/7201)) [@galipremsagar](https://github.com/galipremsagar)
 - Implement `cudf::group_by` (hash) for `decimal32` and `decimal64` ([#7190](https://github.com/rapidsai/cudf/pull/7190)) [@codereport](https://github.com/codereport)
-- Adding support to specify &quot;level&quot; parameter for `Dataframe.rename` ([#7135](https://github.com/rapidsai/cudf/pull/7135)) [@skirui-source](https://github.com/skirui-source)
 - Adding support to specify &quot;level&quot; parameter  for `Dataframe.rename` ([#7135](https://github.com/rapidsai/cudf/pull/7135)) [@skirui-source](https://github.com/skirui-source)
 
 ## 🛠️ Improvements
@@ -5461,7 +5459,6 @@
 - Rework libcudf CMakeLists.txt to export targets for CPM ([#7107](https://github.com/rapidsai/cudf/pull/7107)) [@trxcllnt](https://github.com/trxcllnt)
 - Adding Interval Dtype ([#6984](https://github.com/rapidsai/cudf/pull/6984)) [@marlenezw](https://github.com/marlenezw)
 - Cleaning up `for` loops with `make_(counting_)transform_iterator` ([#6546](https://github.com/rapidsai/cudf/pull/6546)) [@codereport](https://github.com/codereport)
-
 
 # cuDF 0.18.0 (24 Feb 2021)
 
