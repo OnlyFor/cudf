@@ -154,7 +154,6 @@ repos:
             cpp/src/io/parquet/ipc/Schema_generated[.]h$
           )
       - id: verify-alpha-spec
-        args: ["--fix", "--mode=release"]
   - repo: https://github.com/rapidsai/dependency-file-generator
     rev: v1.13.11
     hooks:
