@@ -110,6 +110,7 @@ class cufile_shim {
 
   ~cufile_shim()
   {
+    if (driver_close != nullptr) driver_close();
     if (cf_lib != nullptr) dlclose(cf_lib);
   }
 
@@ -237,8 +238,8 @@ std::vector<std::future<ResultT>> make_sliced_tasks(
   auto const slices                = make_file_io_slices(size, max_slice_size);
   std::vector<std::future<ResultT>> slice_tasks;
   std::transform(slices.cbegin(), slices.cend(), std::back_inserter(slice_tasks), [&](auto& slice) {
-    return std::async(
-      std::launch::async, function, ptr + slice.offset, slice.size, offset + slice.offset);
+    return pool.submit_task(
+      [=] { return function(ptr + slice.offset, slice.size, offset + slice.offset); });
   });
   return slice_tasks;
 }
